@@ -2,6 +2,7 @@ package org.netbeans.mvnhieview;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.event.ChangeListener;
 import org.netbeans.api.project.Project;
 import org.netbeans.spi.project.SubprojectProvider;
@@ -29,8 +30,14 @@ public class ModulesNodeFactory2 implements NodeFactory {
 
         @Override
         public List<Project> keys() {
-            return new ArrayList<Project> (project.getLookup().
+            List<Project> projects = new ArrayList<> (project.getLookup().
                 lookup(SubprojectProvider.class).getSubprojects());
+            
+            String rootPath = project.getProjectDirectory().getPath();
+            
+            return projects.stream()
+                           .filter(p -> p.getProjectDirectory().getPath().startsWith(rootPath))
+                           .collect(Collectors.toList());
         }
 
         @Override
